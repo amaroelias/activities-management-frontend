@@ -16,9 +16,22 @@ export class StatisticBinaryComponent implements OnInit {
   endDate: Date | null = null;
   errorMessageOn: boolean = false;
   errorMessage: string = "";
-  idApp: string = "WEB-BINARIOS 1.0";
+  idApp: string = "";
   applicationsOptions: string[] = [];
   responseStatistics: ResponseStatistics = new ResponseStatistics();
+
+  // Filtros dinâmicos adicionais
+  selectedUser: string = "";
+  selectedPhase: string = "";
+  selectedActivity: string = "";
+  selectedIsCorrect: boolean | null = null;
+  selectedTypeOfQuestion: string = "";
+
+  // Opções para preenchimento dos filtros
+  usersOptions: string[] = [];
+  phaseOptions: string[] = [];
+  activityOptions: string[] = [];
+  typeOfQuestionOptions: string[] = [];
 
   // Variáveis de paginação
   page: number = 0;
@@ -32,12 +45,111 @@ export class StatisticBinaryComponent implements OnInit {
   }
 
   searchResponses(idApp: string): void {
-    if (this.startDate != null && this.endDate != null) {
-      this.loadAllResponsesWithDate(idApp);
-      this.getStatisticsWithDate();
+    this.idApp = idApp;
+    this.page = 0;
+    this.fetchFilteredData();
+  }
+
+  fetchFilteredData(): void {
+    this.errorMessage = "Carregando respostas...";
+    this.errorMessageOn = true;
+
+    const filters = {
+      userID: this.selectedUser,
+      phase: this.selectedPhase,
+      activity: this.selectedActivity,
+      isCorrect: this.selectedIsCorrect,
+      typeOfQuestion: this.selectedTypeOfQuestion,
+      startDate: this.startDate,
+      endDate: this.endDate
+    };
+
+    // Busca as respostas paginadas com os filtros aplicados
+    this.responseService.getFilteredQuestions(this.idApp, filters, this.page, this.size, "dateResponse,desc").subscribe(
+      (data) => {
+        if (data && data.content) {
+          this.responses = data.content;
+          this.totalPages = data.totalPages;
+          this.errorMessageOn = false;
+          if (this.responses.length === 0) {
+            this.errorMessage = "Nenhuma resposta encontrada para os filtros selecionados!";
+            this.errorMessageOn = true;
+          }
+        } else {
+          this.responses = [];
+          this.errorMessage = "Nenhum dado retornado!";
+          this.errorMessageOn = true;
+        }
+      },
+      (error) => {
+        console.error('Erro ao buscar respostas:', error);
+        this.responses = [];
+        this.errorMessage = "Erro ao carregar respostas!";
+        this.errorMessageOn = true;
+      }
+    );
+
+    // Busca as estatísticas consolidadas com os mesmos filtros aplicados
+    this.responseService.getStatisticsFiltered(this.idApp, filters).subscribe(
+      (stats) => {
+        this.responseStatistics = stats;
+      },
+      (error) => {
+        console.error('Erro ao carregar estatísticas:', error);
+        this.responseStatistics = new ResponseStatistics();
+      }
+    );
+  }
+
+  onAppSelected(idApp: string): void {
+    this.idApp = idApp;
+    this.selectedUser = "";
+    this.selectedPhase = "";
+    this.selectedActivity = "";
+    this.selectedIsCorrect = null;
+    this.selectedTypeOfQuestion = "";
+
+    this.usersOptions = [];
+    this.phaseOptions = [];
+    this.activityOptions = [];
+    this.typeOfQuestionOptions = [];
+
+    if (idApp) {
+      this.loadPhases(idApp);
+      this.loadUsers(idApp);
+      this.loadQuestionTypes(idApp);
+    }
+  }
+
+  onPhaseSelected(phase: string): void {
+    this.selectedPhase = phase;
+    this.selectedActivity = "";
+    this.activityOptions = [];
+
+    if (phase) {
+      this.loadActivities(this.idApp, phase);
+    }
+  }
+
+  onUserSelected(userID: string): void {
+    this.selectedUser = userID;
+  }
+
+  onActivitySelected(activity: string): void {
+    this.selectedActivity = activity;
+  }
+
+  onTypeOfQuestionSelected(typeOfQuestion: string): void {
+    this.selectedTypeOfQuestion = typeOfQuestion;
+  }
+
+  onIsCorrectSelected(value: string): void {
+    if (value === "true") {
+      this.selectedIsCorrect = true;
+    } else if (value === "false") {
+      this.selectedIsCorrect = false;
     } else {
-      this.loadAllResponses(idApp);
-      this.getStatistics();
+      this.selectedIsCorrect = null;
     }
   }
 
@@ -49,7 +161,6 @@ export class StatisticBinaryComponent implements OnInit {
       (idApps: string[]) => {
         if (idApps.length > 0) {
           this.applicationsOptions = idApps;
-          console.log("Apps:", this.applicationsOptions);
           this.errorMessageOn = false;
         }
       },
@@ -62,117 +173,45 @@ export class StatisticBinaryComponent implements OnInit {
     );
   }
 
-  private getStatistics(): void {
-    this.responseService.getStatisticsAllResponse(this.idApp).subscribe(
-      (questionStatistics: ResponseStatistics) => {
-        this.responseStatistics = questionStatistics;
-        console.log(this.responseStatistics);
-        this.errorMessage = "";
-        this.errorMessageOn = false;
-      },
-      (error) => {
-        console.error('Ocorreu um erro ao buscar as estatísticas das respostas:', error);
-        this.responseStatistics = new ResponseStatistics();
-        this.errorMessage = "Ocorreu um erro ao buscar as estatísticas das respostas. Por favor, tente novamente mais tarde.";
-        this.errorMessageOn = true;
-      }
+  private loadPhases(idApp: string): void {
+    this.responseService.getPhases(idApp).subscribe(
+      (phases) => this.phaseOptions = phases,
+      (err) => console.error('Erro ao carregar fases:', err)
     );
   }
 
-  private getStatisticsWithDate(): void {
-    if (this.startDate != null && this.endDate != null) {
-      this.responseService.getStatisticsAllResponseWithDate(this.idApp, this.startDate, this.endDate).subscribe(
-        (questionStatistics: ResponseStatistics) => {
-          this.responseStatistics = questionStatistics;
-          console.log(this.responseStatistics);
-          this.errorMessage = "";
-          this.errorMessageOn = false;
-        },
-        (error) => {
-          console.error('Ocorreu um erro ao buscar as estatísticas das respostas, erro:', error);
-          this.responseStatistics = new ResponseStatistics();
-          this.errorMessage = "Ocorreu um erro ao buscar as estatísticas das respostas. Por favor, tente novamente mais tarde.";
-          this.errorMessageOn = true;
-        }
-      );
-    }
-  }
-
-  private loadAllResponsesWithDate(idApp: string): void {
-    this.idApp = idApp;
-    this.errorMessage = "Carregando respostas...";
-    this.errorMessageOn = true;
-    
-    if (this.startDate != null && this.endDate != null) {
-      this.responseService.getAllQuestionWithDate(this.idApp, this.startDate, this.endDate, this.page, this.size).subscribe(
-        (data: any) => {
-          if (data && data.content) {
-            this.responses = data.content;
-            this.totalPages = data.totalPages;
-            this.errorMessageOn = false;
-            if (this.responses.length === 0) {
-              this.errorMessage = "Nenhuma resposta encontrada!";
-              this.errorMessageOn = true;
-            }
-          } else {
-            this.errorMessage = "Nenhum dado retornado!";
-            this.errorMessageOn = true;
-          }
-        },
-        error => {
-          console.error('Erro ao buscar detalhes da atividade:', error);
-          this.errorMessage = "Erro ao carregar respostas!";
-          this.errorMessageOn = true;
-        }
-      );
-    } else {
-      this.errorMessage = "Datas inválidas!";
-      this.errorMessageOn = true;
-    }
-  }
-  
-
-
-  private loadAllResponses(idApp: string): void {
-    this.idApp = idApp;
-    this.errorMessage = "Carregando respostas...";
-    this.errorMessageOn = true;
-    
-    this.responseService.getAllQuestion(this.idApp, this.page, this.size).subscribe(
-      (data: any) => {
-        if (data && data.content) {
-          this.responses = data.content;
-          this.totalPages = data.totalPages;
-          this.errorMessageOn = false;
-          if (this.responses.length === 0) {
-            this.errorMessage = "Nenhuma resposta encontrada!";
-            this.errorMessageOn = true;
-          }
-        } else {
-          this.errorMessage = "Nenhum dado retornado!";
-          this.errorMessageOn = true;
-        }
-      },
-      error => {
-        console.error('Erro ao buscar detalhes da atividade:', error);
-        this.errorMessage = "Erro ao carregar respostas!";
-        this.errorMessageOn = true;
-      }
+  private loadUsers(idApp: string): void {
+    this.responseService.getUsers(idApp).subscribe(
+      (users) => this.usersOptions = users,
+      (err) => console.error('Erro ao carregar usuários:', err)
     );
   }
-  
+
+  private loadQuestionTypes(idApp: string): void {
+    this.responseService.getTypesOfQuestions(idApp).subscribe(
+      (types) => this.typeOfQuestionOptions = types,
+      (err) => console.error('Erro ao carregar tipos de questões:', err)
+    );
+  }
+
+  private loadActivities(idApp: string, phase: string): void {
+    this.responseService.getActivity(idApp, phase).subscribe(
+      (activities) => this.activityOptions = activities,
+      (err) => console.error('Erro ao carregar atividades:', err)
+    );
+  }
 
   nextPage(): void {
     if (this.page < this.totalPages - 1) {
       this.page++;
-      this.searchResponses(this.idApp);
+      this.fetchFilteredData();
     }
   }
 
   previousPage(): void {
     if (this.page > 0) {
       this.page--;
-      this.searchResponses(this.idApp);
+      this.fetchFilteredData();
     }
   }
 }

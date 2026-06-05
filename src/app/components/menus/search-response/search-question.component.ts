@@ -137,8 +137,8 @@ export class SearchQuestionComponent implements OnInit {
   
 
   // Método para realizar a pesquisa da questão
-  searchQuestion(phase: string, activty: string) {
-    this.selectedActivity = activty;
+  searchQuestion(phase: string, activity: string) {
+    this.selectedActivity = activity;
     this.selectedPhase = phase;
     // Verifica se há alguma fase ou atividade selecionada
     if (this.selectedActivity.trim() !== "" || this.selectedPhase.trim() !== "" ) {

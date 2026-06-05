@@ -6,13 +6,62 @@
 
 <div class="container-search">
   <div class="content">
+    <!-- Seleção da Aplicação -->
     <autocomplete-input 
       #applicationInput 
       class="autocomplete-input" 
       [options]="applicationsOptions" 
-      [placeholder]="'Digite a aplicação que deseja pesquisar'">
+      [placeholder]="'Digite a aplicação que deseja pesquisar'"
+      (selectedOptionChange)="onAppSelected($event)">
     </autocomplete-input>
 
+    <!-- Filtros Adicionais Dinâmicos -->
+    <div *ngIf="idApp" class="extra-filters">
+      <br>
+      <autocomplete-input 
+        #userInput 
+        class="autocomplete-input" 
+        [options]="usersOptions" 
+        [placeholder]="'Filtrar por Usuário (Opcional)'"
+        (selectedOptionChange)="onUserSelected($event)">
+      </autocomplete-input>
+      <br><br>
+      
+      <autocomplete-input 
+        #phaseInput 
+        class="autocomplete-input" 
+        [options]="phaseOptions" 
+        [placeholder]="'Filtrar por Fase (Opcional)'"
+        (selectedOptionChange)="onPhaseSelected($event)">
+      </autocomplete-input>
+      <br><br>
+      
+      <autocomplete-input 
+        #activityInput 
+        class="autocomplete-input" 
+        [options]="activityOptions" 
+        [placeholder]="'Filtrar por Atividade (Opcional)'"
+        (selectedOptionChange)="onActivitySelected($event)">
+      </autocomplete-input>
+      <br><br>
+      
+      <autocomplete-input 
+        #typeInput 
+        class="autocomplete-input" 
+        [options]="typeOfQuestionOptions" 
+        [placeholder]="'Filtrar por Tipo de Questão (Opcional)'"
+        (selectedOptionChange)="onTypeOfQuestionSelected($event)">
+      </autocomplete-input>
+      <br><br>
+      
+      <select (change)="onIsCorrectSelected($any($event.target).value)" class="correctness-select">
+        <option value="">Filtrar por Correção (Todos - Opcional)</option>
+        <option value="true">Apenas Corretas</option>
+        <option value="false">Apenas Incorretas</option>
+      </select>
+    </div>
+
+    <!-- Filtro por Período de Data -->
     <div (click)="dataOn = !dataOn" class="dataOn">
       <h4>Filtrar respostas por período</h4>    
       <mat-icon>date_range</mat-icon>
@@ -36,7 +85,7 @@
   <mat-progress-bar mode="indeterminate"></mat-progress-bar>
 </div>
 
-
+<!-- Cards de Estatísticas Consolidadas com Base nos Filtros -->
 <div *ngIf="responses.length > 0" class="container-user-statistics">
   <div class="statistics-item">
     <h2>Total de Respostas</h2>
@@ -60,6 +109,7 @@
   </div>
 </div>
 
+<!-- Tabela de Resultados -->
 <div *ngIf="responses.length > 0" class="container-responses">
   <div class="content">
     <table class="answers-table">
@@ -85,7 +135,7 @@
           <td>{{ response.userResponse }}</td>
           <td>{{ response.expectedResponse }}</td>
           <td>{{ response.isCorrect ? 'Sim' : 'Não' }}</td>
-          <td>{{ response.dateResponse | date:'dd/MM/yyyy' }}</td>
+          <td>{{ response.dateResponse | date:'dd/MM/yyyy HH:mm' }}</td>
           <td>{{ response.typeOfQuestion }}</td>
         </tr>
       </tbody>

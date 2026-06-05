@@ -1,20 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-
-
+import { environment } from 'src/environments/environment';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
+  private readonly API = `${environment.apiUrl}/user`;
 
-  private readonly API = 'https://activities.a4s.dev.br/api/user';
+  constructor(private httpClient: HttpClient) {}
 
-
-  constructor(private httpClient: HttpClient) { }
-
-  getUsers(){
+  getUsers() {
     return this.httpClient.get<string[]>(`${this.API}/getUsers`);
   }
-
-
 }
