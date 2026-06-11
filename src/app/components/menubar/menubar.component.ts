@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from 'src/app/service/auth/auth.service';
 
 @Component({
   selector: 'app-menubar',
@@ -8,12 +9,16 @@ import { Component, OnInit } from '@angular/core';
 export class MenubarComponent implements OnInit {
   menuActive = false;
 
-  constructor() { }
+  constructor(public authService: AuthService) { }
 
   ngOnInit(): void {
   }
 
   toggleMenu(): void {
     this.menuActive = !this.menuActive;
+  }
+
+  logout(): void {
+    this.authService.logout();
   }
 }

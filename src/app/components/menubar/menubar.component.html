@@ -14,6 +14,7 @@
     <button mat-button routerLink="/statistics-binary">Listar Todas as Respostas</button>
     <button mat-button routerLink="/search-user">Pesquisar por Usuário</button>
     <button mat-button routerLink="/search-question">Pesquisar por Questão</button>
+    <button mat-button *ngIf="authService.isLoggedIn()" (click)="logout()">Sair</button>
   </div>
   
 </div>

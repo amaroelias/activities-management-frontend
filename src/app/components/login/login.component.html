@@ -1,0 +1,26 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="logo-area">
+      <img src="assets/cover/capa.png" alt="Computação Plugada Logo" class="logo">
+    </div>
+    
+    <h2>Autenticação</h2>
+    <p class="subtitle">Faça login com sua conta dcx para acessar o activities management</p>
+    
+    <div class="auth-action" *ngIf="!loading">
+      <div id="google-btn"></div>
+    </div>
+
+    <!-- Progresso de Carregamento -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      <p>Verificando acesso do e-mail no servidor...</p>
+    </div>
+
+    <!-- Mensagem de Erro -->
+    <div *ngIf="errorMessage" class="error-container">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ errorMessage }}</span>
+    </div>
+  </div>
+</div>
