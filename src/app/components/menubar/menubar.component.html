@@ -1,20 +1,31 @@
-<div class="main-menu">
+<nav class="navbar">
+  <a class="navbar-brand">
+    <span class="navbar-logo-icon">◉</span>
+    <span class="navbar-brand-name">Activities Management<span class="brand-accent"></span></span>
+  </a>
 
-  <button mat-icon-button class="example-icon" routerLink="/" aria-label="Icone for home pag">
-    <mat-icon>home</mat-icon>
+  <button class="hamburger" (click)="toggleMenu()" [class.open]="menuActive" aria-label="Toggle menu">
+    <span></span>
+    <span></span>
+    <span></span>
   </button>
 
-  <mat-menu #aboveMenu="matMenu" yPosition="above">
-  </mat-menu>
-  <span class="example-spacer"></span>
-  
-  <button class="menu-toggle-button" (click)="toggleMenu()"><mat-icon>menu</mat-icon></button>
-  
-  <div class="options-menu" [class.active]="menuActive">
-    <button mat-button routerLink="/statistics-binary">Listar Todas as Respostas</button>
-    <button mat-button routerLink="/search-user">Pesquisar por Usuário</button>
-    <button mat-button routerLink="/search-question">Pesquisar por Questão</button>
-    <button mat-button *ngIf="authService.isLoggedIn()" (click)="logout()">Sair</button>
+  <div class="navbar-links" [class.active]="menuActive">
+    <a class="nav-link" routerLink="/statistics-binary" routerLinkActive="active" (click)="menuActive = false">
+      <mat-icon>list_alt</mat-icon>
+      <span>Todas as Respostas</span>
+    </a>
+    <a class="nav-link" routerLink="/search-user" routerLinkActive="active" (click)="menuActive = false">
+      <mat-icon>person_search</mat-icon>
+      <span>Buscar Usuário</span>
+    </a>
+    <a class="nav-link" routerLink="/search-question" routerLinkActive="active" (click)="menuActive = false">
+      <mat-icon>quiz</mat-icon>
+      <span>Buscar Questão</span>
+    </a>
+    <button class="btn-logout" *ngIf="authService.isLoggedIn()" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Sair</span>
+    </button>
   </div>
-  
-</div>
+</nav>

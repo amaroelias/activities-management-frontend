@@ -1,48 +1,50 @@
 <app-menubar></app-menubar>
-<br>
+
 <div class="title">
   <h1>Pesquisa por Usuário</h1>
 </div>
 
-
 <div class="container-search">
+  <div class="search-form">
+    <div class="filter-fields">
+      <div class="container-input-app">
+        <autocomplete-input 
+          #applicationInput 
+          class="autocomplete-input" 
+          [options]="applicationsOptions" 
+          [placeholder]="'Digite a aplicação que deseja pesquisar'">
+        </autocomplete-input>
+      </div>
 
-  <div class="container-input-app">
-    <autocomplete-input 
-    #applicationInput 
-    class="autocomplete-input" 
-    [options]="applicationsOptions" 
-    [placeholder]="'Digite a aplicação que deseja pesquisar'">
-    </autocomplete-input>
+      <div class="content" (click)="onClickHandler(applicationInput.value)">
+        <autocomplete-input 
+          #userInput 
+          class="autocomplete-input" 
+          [options]="usersOptions" 
+          [placeholder]="'Digite o código do usuário ou seu e-mail'">
+        </autocomplete-input>
+      </div>
+    </div>
+    
+    <div (click)="dataOn = !dataOn" class="date-filter-toggle">
+      <mat-icon>date_range</mat-icon>
+      <span>Filtrar respostas por período</span>
+    </div>
+    
+    <div *ngIf="dataOn" class="date-filter-grid">  
+      <div class="date-field">
+        <label>Data Inicial</label>
+        <input type="date" [(ngModel)]="startDate" placeholder="Data inicial">
+      </div>
+      <div class="date-field">
+        <label>Data Final</label>
+        <input type="date" [(ngModel)]="endDate" placeholder="Data final">
+      </div>
+    </div>
+    
+    <button (click)="filterButtonClick(userInput.value)" class="filter-button">Pesquisar</button>
+    <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
   </div>
-
-  <div class="content" (click)="onClickHandler(applicationInput.value)">
-    <br>
-    <autocomplete-input 
-      #userInput 
-      class="autocomplete-input" 
-      [options]="usersOptions" 
-      [placeholder]="'Digite o código do usuário ou seu e-mail'">
-    </autocomplete-input>
-  </div>
-  
-  <div (click)="dataOn = !dataOn" class="dataOn">
-    <h4>Filtrar respostas por período</h4>    
-    <mat-icon>date_range</mat-icon>
-  </div>
-  
-  <div *ngIf="dataOn" class="date-filter-container">  
-    <h5>Data Inicial:</h5>
-    <input type="date" [(ngModel)]="startDate" placeholder="Data inicial">
-    <br>
-    <h5>Data Final:</h5>
-    <input type="date" [(ngModel)]="endDate" placeholder="Data final">
-  </div>
-  <br>
-  
-  <button (click)="filterButtonClick(userInput.value)" class="filter-button">Pesquisar</button>
-  
-  <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
 </div>
 
 <div *ngIf="userQuestions.length > 0" class="container-user-statistics">
@@ -92,7 +94,11 @@
           <td>{{ question.userID }}</td>
           <td>{{ question.userResponse }}</td>
           <td>{{ question.expectedResponse }}</td>
-          <td>{{ question.isCorrect ? 'Sim' : 'Não' }}</td>
+          <td>
+            <span class="status-badge" [class.correct]="question.isCorrect" [class.incorrect]="!question.isCorrect">
+              {{ question.isCorrect ? 'Sim' : 'Não' }}
+            </span>
+          </td>
           <td>{{ question.dateResponse | date:'dd/MM/yyyy' }}</td>
           <td>{{ question.typeOfQuestion }}</td>
         </tr>
@@ -100,3 +106,4 @@
     </table>
   </div>
 </div>
+

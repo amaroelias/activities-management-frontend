@@ -1,213 +1,73 @@
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f0f0f0;
-  margin: 0;
-}
 
-/* Typography */
-
-h5{
-  margin-bottom: 0;
-  margin-top: 1%;
-}
-
-h1 {
-  color: var(--dark-blue);
-  padding: 0.5rem;
-  font-weight: 700;
-  margin: 1rem 0 0 0;
-  font-size: 1.6rem;
-}
-
-h2, th {
-  color: var(--dark-blue);
-}
-
-.title {
-  text-align: center;
-}
-
-
-/* Buttons */
-
-.filter-button {  
+/* Primary filter row */
+.primary-filter {
   width: 100%;
-  padding: 10px 0;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 2%;
 }
 
-.filter-button:hover {
-  background-color: var(--light-blue);
+/* Dynamic Extra Filters Grid */
+.extra-filters-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
 }
 
-.back-button:hover {
-  background-color: #0056b3;
+@media (min-width: 640px) {
+  .extra-filters-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
-
-/* Inputs and Selects */
-
-input[type="date"] {
-  padding: 10px;
-  margin-right: 25px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  width: 96%;
-}
-
-input[type="text"],
-select {
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.date-label {
-  margin-right: 20px; /* Espaçamento entre os títulos e os inputs de data */
-}
-
-
-/* Containers */
-.container-user-statistics {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-  padding-right: 5%;
-  padding-left: 5%;
-  border-radius: 5px;
-}
-
-.pagination-controls{
-  text-align: center;
-  padding: 2%;
-}
-
-.pagination-controls button{
-  padding: 5px;
-  margin-left: 3px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.statistics-item {
-  text-align: center;
-  flex-basis: 18%;
-  padding: 10px;
-  background-color: #f9f9f9;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.statistics-value{
-  font-size: larger;
-}
-
-
-.dataOn {
-  cursor: pointer;
-  color: var(--dark-blue);
-  text-align: center;
-  margin-top: 2%;
-}
-.dataOn h4{
-  margin-bottom: 0;
-  margin-right: 1%;
-}
-
-.date-filter-container{
-  text-align: left;
-}
- 
-.container-search {
-  max-width: 800px;
-  margin: 20px auto;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
-  margin-bottom: 5%;
-}
-
-.container-response {
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.content {
-  text-align: center;
-}
-
-.container-responses .content {
-  padding: 20px;
-  border-radius: 5px;
-  background-color: #f9f9f9;
-}
-
-
-
-/* Messages */
-
+/* Loading warning */
 .warning-noserver {
-  padding: 20%;
-  padding-top: 5%;
+  padding: 24px;
   text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-
-/* Tables */
-
-.answers-table {
-  padding: 15px;
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.answers-table th {
-  background-color: #007bff;
-  color: #fff;
-  padding: 10px;
-  text-align: center;
-}
-
-.answers-table th, .answers-table td {
-  padding: 15px;
-}
-
-.answers-table td {
-  padding: 10px;
-  border: 1px solid #ddd;
-}
-
-.answers-table tbody tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
-
-.answers-table tbody tr:hover {
-  background-color: #ddd;
-}
-
-
-/* Miscellaneous */
-
-
-.div-data {
+/* Pagination */
+.pagination-controls {
   display: flex;
-  align-items: right;
-  text-align: right;
-  padding: 2px;
-  font-size: small;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 20px;
+  background: #FAFBFE;
+  border-top: 1px solid #F1F5F9;
+  border-radius: 0 0 10px 10px;
+  flex-wrap: wrap;
+}
+
+.pagination-controls span {
+  font-size: 0.85rem;
+  color: #64748B;
+  font-weight: 500;
+}
+
+.pagination-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.pagination-controls button {
+  padding: 7px 18px;
+  background-color: var(--brand-dark, #07377A);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: opacity 0.2s, background-color 0.2s;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+  background-color: #1a5faa;
+}
+
+.pagination-controls button:disabled {
+  background-color: #CBD5E1;
+  cursor: not-allowed;
 }

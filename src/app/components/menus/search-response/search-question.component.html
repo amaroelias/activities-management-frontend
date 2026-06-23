@@ -1,56 +1,56 @@
 <app-menubar></app-menubar>
-<br>
 
 <div class="title">
   <h1>Pesquisa por questão</h1>
 </div>
 
-
 <div class="container-search">
-  <div class="content">
-    <autocomplete-input 
-    #applicationInput 
-    class="autocomplete-input" 
-    [options]="applicationsOptions" 
-    [placeholder]="'Aplicação'">
-    </autocomplete-input>
-    <br><br>
-    <div class="content" (click)="onClickHandler(applicationInput.value, phaseInput.value)">
+  <div class="search-form">
+    <div class="filter-fields">
       <autocomplete-input 
-      #phaseInput 
-      class="autocomplete-input" 
-      [options]="phaseOptions" 
-      [placeholder]="'Fase'">
+        #applicationInput 
+        class="autocomplete-input" 
+        [options]="applicationsOptions" 
+        [placeholder]="'Aplicação'">
       </autocomplete-input>
-      <br><br>
-      <autocomplete-input 
-      #activityInput 
-      class="autocomplete-input" 
-      [options]="activityOptions" 
-      [placeholder]="'Atividade'">
-      </autocomplete-input>
-   </div>
-  </div>
+      
+      <div class="sub-fields-group" (click)="onClickHandler(applicationInput.value, phaseInput.value)">
+        <autocomplete-input 
+          #phaseInput 
+          class="autocomplete-input" 
+          [options]="phaseOptions" 
+          [placeholder]="'Fase'">
+        </autocomplete-input>
+        
+        <autocomplete-input 
+          #activityInput 
+          class="autocomplete-input" 
+          [options]="activityOptions" 
+          [placeholder]="'Atividade'">
+        </autocomplete-input>
+      </div>
+    </div>
 
-    <div (click)="dataOn=!dataOn" class="dataOn">
-      <h4>Filtrar respostas por périodo</h4> 
+    <div (click)="dataOn=!dataOn" class="date-filter-toggle">
       <mat-icon>date_range</mat-icon>
+      <span>Filtrar respostas por período</span>
     </div>
 
-    <div *ngIf="dataOn" class="date-filter-container">  
-      <h5>Data Inicial:</h5>
-      <input type="date" [(ngModel)]="startDate" placeholder="Data inicial">
-      <br>
-      <h5>Data Final:</h5>
-      <input type="date" [(ngModel)]="endDate" placeholder="Data final">
+    <div *ngIf="dataOn" class="date-filter-grid">  
+      <div class="date-field">
+        <label>Data Inicial</label>
+        <input type="date" [(ngModel)]="startDate" placeholder="Data inicial">
+      </div>
+      <div class="date-field">
+        <label>Data Final</label>
+        <input type="date" [(ngModel)]="endDate" placeholder="Data final">
+      </div>
     </div>
-    <br>
     
     <button (click)="searchQuestion(phaseInput.value, activityInput.value);" class="filter-button">Pesquisar</button>
     <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
   </div>
-
-
+</div>
 
 <div *ngIf="questionSearch.length > 0" class="container-user-statistics">
   <div class="statistics-item">
@@ -74,8 +74,6 @@
     <div class="statistics-value">{{ questionStatistics.percentageWrongsAnswers.toFixed(1) }}%</div>
   </div>
 </div>
-
-
 
 <div class="container-responses" *ngIf="questionSearch.length > 0">
   <div class="content">
@@ -101,7 +99,11 @@
           <td>{{ question.userID }}</td>
           <td>{{ question.userResponse }}</td>
           <td>{{ question.expectedResponse }}</td>
-          <td>{{ question.isCorrect ? 'Sim' : 'Não' }}</td>
+          <td>
+            <span class="status-badge" [class.correct]="question.isCorrect" [class.incorrect]="!question.isCorrect">
+              {{ question.isCorrect ? 'Sim' : 'Não' }}
+            </span>
+          </td>
           <td>{{ question.dateResponse | date:'dd/MM/yyyy' }}</td>
           <td>{{ question.typeOfQuestion }}</td>
         </tr>
@@ -109,4 +111,5 @@
     </table>
   </div>
 </div>
+
 

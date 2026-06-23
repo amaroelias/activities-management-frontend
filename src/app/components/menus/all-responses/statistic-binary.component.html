@@ -1,23 +1,24 @@
 <app-menubar></app-menubar>
-<br>
+
 <div class="title">
   <h1>Todas as respostas</h1>
 </div>
 
 <div class="container-search">
-  <div class="content">
+  <div class="search-form">
     <!-- Seleção da Aplicação -->
-    <autocomplete-input 
-      #applicationInput 
-      class="autocomplete-input" 
-      [options]="applicationsOptions" 
-      [placeholder]="'Digite a aplicação que deseja pesquisar'"
-      (selectedOptionChange)="onAppSelected($event)">
-    </autocomplete-input>
+    <div class="primary-filter">
+      <autocomplete-input 
+        #applicationInput 
+        class="autocomplete-input" 
+        [options]="applicationsOptions" 
+        [placeholder]="'Digite a aplicação que deseja pesquisar'"
+        (selectedOptionChange)="onAppSelected($event)">
+      </autocomplete-input>
+    </div>
 
     <!-- Filtros Adicionais Dinâmicos -->
-    <div *ngIf="idApp" class="extra-filters">
-      <br>
+    <div *ngIf="idApp" class="extra-filters-grid">
       <autocomplete-input 
         #userInput 
         class="autocomplete-input" 
@@ -25,7 +26,6 @@
         [placeholder]="'Filtrar por Usuário (Opcional)'"
         (selectedOptionChange)="onUserSelected($event)">
       </autocomplete-input>
-      <br><br>
       
       <autocomplete-input 
         #phaseInput 
@@ -34,7 +34,6 @@
         [placeholder]="'Filtrar por Fase (Opcional)'"
         (selectedOptionChange)="onPhaseSelected($event)">
       </autocomplete-input>
-      <br><br>
       
       <autocomplete-input 
         #activityInput 
@@ -43,7 +42,6 @@
         [placeholder]="'Filtrar por Atividade (Opcional)'"
         (selectedOptionChange)="onActivitySelected($event)">
       </autocomplete-input>
-      <br><br>
       
       <autocomplete-input 
         #typeInput 
@@ -52,7 +50,6 @@
         [placeholder]="'Filtrar por Tipo de Questão (Opcional)'"
         (selectedOptionChange)="onTypeOfQuestionSelected($event)">
       </autocomplete-input>
-      <br><br>
       
       <select (change)="onIsCorrectSelected($any($event.target).value)" class="correctness-select">
         <option value="">Filtrar por Correção (Todos - Opcional)</option>
@@ -62,19 +59,21 @@
     </div>
 
     <!-- Filtro por Período de Data -->
-    <div (click)="dataOn = !dataOn" class="dataOn">
-      <h4>Filtrar respostas por período</h4>    
+    <div (click)="dataOn = !dataOn" class="date-filter-toggle">
       <mat-icon>date_range</mat-icon>
+      <span>Filtrar respostas por período</span>
     </div>
     
-    <div *ngIf="dataOn" class="date-filter-container">  
-      <h5>Data Inicial:</h5>
-      <input type="date" [(ngModel)]="startDate" placeholder="Data inicial">
-      <br>
-      <h5>Data Final:</h5>
-      <input type="date" [(ngModel)]="endDate" placeholder="Data final">
+    <div *ngIf="dataOn" class="date-filter-grid">  
+      <div class="date-field">
+        <label>Data Inicial</label>
+        <input type="date" [(ngModel)]="startDate" placeholder="Data inicial">
+      </div>
+      <div class="date-field">
+        <label>Data Final</label>
+        <input type="date" [(ngModel)]="endDate" placeholder="Data final">
+      </div>
     </div>
-    <br>
     
     <button (click)="searchResponses(applicationInput.value)" class="filter-button">Pesquisar</button>
   </div>
@@ -134,19 +133,24 @@
           <td>{{ response.userID }}</td>
           <td>{{ response.userResponse }}</td>
           <td>{{ response.expectedResponse }}</td>
-          <td>{{ response.isCorrect ? 'Sim' : 'Não' }}</td>
+          <td>
+            <span class="status-badge" [class.correct]="response.isCorrect" [class.incorrect]="!response.isCorrect">
+              {{ response.isCorrect ? 'Sim' : 'Não' }}
+            </span>
+          </td>
           <td>{{ response.dateResponse | date:'dd/MM/yyyy HH:mm' }}</td>
           <td>{{ response.typeOfQuestion }}</td>
         </tr>
       </tbody>
     </table>
-   
-  </div>
-  <div class="pagination-controls" *ngIf="responses.length > 0">
-    <span>Página {{ page + 1 }} de {{ totalPages }}</span>
-    <br>
-    <button (click)="previousPage()" [disabled]="page === 0">Anterior</button>
-    <button (click)="nextPage()" [disabled]="page === totalPages - 1">Próxima</button>  
   </div>
   
+  <div class="pagination-controls" *ngIf="responses.length > 0">
+    <span>Página {{ page + 1 }} de {{ totalPages }}</span>
+    <div class="pagination-actions">
+      <button (click)="previousPage()" [disabled]="page === 0">Anterior</button>
+      <button (click)="nextPage()" [disabled]="page === totalPages - 1">Próxima</button>  
+    </div>
+  </div>
 </div>
+
