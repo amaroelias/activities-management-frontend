@@ -28,6 +28,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { NgChartsModule }  from 'ng2-charts';
+import { EstatisticasComponent } from './components/estatisticas/estatisticas.component'; 
 
 @NgModule({
   declarations: [
@@ -39,6 +41,7 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     SearchQuestionComponent,
     MenubarComponent,
     AutocompleteComponent,
+    EstatisticasComponent,
   ],
   imports: [
     BrowserModule,
@@ -63,6 +66,7 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     MatFormFieldModule,
     MatInputModule,
     MatAutocompleteModule,
+    NgChartsModule
   ],
   providers: [
     {

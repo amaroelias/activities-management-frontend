@@ -23,6 +23,10 @@
       <mat-icon>quiz</mat-icon>
       <span>Buscar Questão</span>
     </a>
+    <a class="nav-link" routerLink="/estatisticas" routerLinkActive="active" (click)="menuActive = false">
+      <mat-icon>bar_chart</mat-icon>
+      <span>Estatísticas</span>
+    </a>
     <button class="btn-logout" *ngIf="authService.isLoggedIn()" (click)="logout()">
       <mat-icon>logout</mat-icon>
       <span>Sair</span>

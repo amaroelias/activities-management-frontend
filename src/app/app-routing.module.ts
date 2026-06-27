@@ -5,6 +5,7 @@ import { LoginComponent } from './components/login/login.component';
 import { StatisticBinaryComponent } from './components/menus/all-responses/statistic-binary.component'
 import { SearchUserComponent } from './components/menus/search-user/search-user.component';
 import { SearchQuestionComponent } from './components/menus/search-response/search-question.component';
+import { EstatisticasComponent } from './components/estatisticas/estatisticas.component';
 import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
@@ -12,7 +13,8 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'statistics-binary', component: StatisticBinaryComponent, canActivate: [AuthGuard]},
   {path: 'search-user', component: SearchUserComponent, canActivate: [AuthGuard]},
-  {path: 'search-question', component: SearchQuestionComponent, canActivate: [AuthGuard]}
+  {path: 'search-question', component: SearchQuestionComponent, canActivate: [AuthGuard]},
+  {path: 'estatisticas', component: EstatisticasComponent, canActivate: [AuthGuard]},
 ];
 
 @NgModule({

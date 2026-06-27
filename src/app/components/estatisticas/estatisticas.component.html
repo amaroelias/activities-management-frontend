@@ -1,0 +1,158 @@
+<app-menubar></app-menubar>
+
+<div class="page-header">
+  <h1>Estatísticas</h1>
+  <p class="page-subtitle">Visão geral das respostas</p>
+</div>
+
+<!-- ── Painel de Filtros ─────────────────────────────────────── -->
+<div class="filter-panel">
+
+  <div class="filter-row">
+
+    <!-- Aplicação -->
+    <div class="filter-field">
+      <label class="filter-label" for="sel-aplicacao">Aplicação</label>
+      <select id="sel-aplicacao"
+              [(ngModel)]="filtros.idApp"
+              (change)="onAplicacaoChange()">
+        <option *ngFor="let app of aplicacoes" [value]="app">{{ app }}</option>
+      </select>
+    </div>
+
+    <!-- Fase -->
+    <div class="filter-field">
+      <label class="filter-label" for="sel-fase">Fase</label>
+      <select id="sel-fase"
+              [(ngModel)]="faseSelecionada"
+              (change)="onFaseChange()"
+              [disabled]="fases.length === 0">
+        <option value="">Todas as fases</option>
+        <option *ngFor="let f of fases" [value]="f">{{ f }}</option>
+      </select>
+    </div>
+
+    <!-- Atividade -->
+    <div class="filter-field">
+      <label class="filter-label" for="sel-atividade">Atividade</label>
+      <select id="sel-atividade"
+              [(ngModel)]="atividadeSelecionada"
+              (change)="onAtividadeChange()"
+              [disabled]="atividades.length === 0">
+        <option value="">Todas as atividades</option>
+        <option *ngFor="let a of atividades" [value]="a">{{ a }}</option>
+      </select>
+    </div>
+
+    <!-- Data inicial -->
+    <div class="filter-field">
+      <label class="filter-label" for="inp-start">De</label>
+      <input id="inp-start"
+             type="date"
+             [(ngModel)]="filtros.startDate"
+             (change)="aplicarFiltros()">
+    </div>
+
+    <!-- Data final -->
+    <div class="filter-field">
+      <label class="filter-label" for="inp-end">Até</label>
+      <input id="inp-end"
+             type="date"
+             [(ngModel)]="filtros.endDate"
+             (change)="aplicarFiltros()">
+    </div>
+
+  </div>
+
+  <div class="filter-actions">
+    <button class="btn-clear" (click)="limparFiltros()" type="button">
+      <mat-icon>filter_alt_off</mat-icon> Limpar filtros
+    </button>
+  </div>
+
+</div>
+
+<!-- ── Loading ───────────────────────────────────────────────── -->
+<div class="charts-loading" *ngIf="isLoading">
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  <p>Carregando estatísticas...</p>
+</div>
+
+<!-- ── Erro ──────────────────────────────────────────────────── -->
+<div class="error-message" *ngIf="errorMessage && !isLoading">
+  <h2>{{ errorMessage }}</h2>
+  <button class="filter-button retry-btn" (click)="aplicarFiltros()" type="button">
+    <mat-icon>refresh</mat-icon> Tentar novamente
+  </button>
+</div>
+
+<!-- ── Cards de resumo ───────────────────────────────────────── -->
+<div class="stats-summary-grid" *ngIf="!isLoading && !errorMessage && stats">
+  <div class="summary-card">
+    <span class="summary-icon"><mat-icon>quiz</mat-icon></span>
+    <div class="summary-info">
+      <span class="summary-label">Total de Respostas</span>
+      <span class="summary-value">{{ stats.quantityAllAnswers }}</span>
+    </div>
+  </div>
+  <div class="summary-card correct">
+    <span class="summary-icon"><mat-icon>check_circle</mat-icon></span>
+    <div class="summary-info">
+      <span class="summary-label">Corretas</span>
+      <span class="summary-value">{{ stats.quantityCorrectsAnswers }}</span>
+    </div>
+  </div>
+  <div class="summary-card incorrect">
+    <span class="summary-icon"><mat-icon>cancel</mat-icon></span>
+    <div class="summary-info">
+      <span class="summary-label">Incorretas</span>
+      <span class="summary-value">{{ stats.quantityWrongsAnswers }}</span>
+    </div>
+  </div>
+  <div class="summary-card avg">
+    <span class="summary-icon"><mat-icon>track_changes</mat-icon></span>
+    <div class="summary-info">
+      <span class="summary-label">Taxa de Acertos</span>
+      <span class="summary-value">{{ stats.percentageCorrectsAnswers | number:'1.1-1' }}%</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── Gráficos ──────────────────────────────────────────────── -->
+<div class="charts-grid" *ngIf="!isLoading && !errorMessage && stats">
+
+  <!-- Gráfico 1: Rosca — corretas vs incorretas -->
+  <div class="chart-card">
+    <div class="chart-wrapper">
+      <canvas baseChart
+              [data]="doughnutData"
+              [options]="doughnutOptions"
+              [type]="'doughnut'">
+      </canvas>
+    </div>
+  </div>
+
+  <!-- Gráfico 2: Barras empilhadas — taxa de acertos por fase -->
+  <div class="chart-card">
+    <div class="chart-wrapper" *ngIf="fases.length > 0; else semFases">
+      <canvas baseChart
+              [data]="faseData"
+              [options]="faseOptions"
+              [type]="'bar'">
+      </canvas>
+    </div>
+    <ng-template #semFases>
+      <div class="chart-empty">
+        <mat-icon>bar_chart</mat-icon>
+        <p>Nenhuma fase encontrada para esta aplicação.</p>
+      </div>
+    </ng-template>
+  </div>
+
+</div>
+
+<!-- Estado vazio -->
+<div class="empty-state" *ngIf="!isLoading && !errorMessage && !stats">
+  <mat-icon>bar_chart</mat-icon>
+  <p>Selecione uma aplicação para visualizar as estatísticas.</p>
+</div>
