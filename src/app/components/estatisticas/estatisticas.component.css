@@ -166,6 +166,10 @@
   transition: box-shadow var(--transition);
 }
 
+.chart-card.full-width {
+  grid-column: 1 / -1;
+}
+
 .chart-card:hover {
   box-shadow: var(--shadow-md);
 }

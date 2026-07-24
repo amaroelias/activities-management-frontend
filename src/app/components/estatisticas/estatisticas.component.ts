@@ -1,11 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { ChartData, ChartOptions } from 'chart.js';
+import { ChartData, ChartOptions, Chart } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { forkJoin } from 'rxjs';
+
+Chart.register(ChartDataLabels);
 import {
   EstatisticasService,
   EstatisticasGerais,
   FiltrosEstatisticas,
 } from 'src/app/service/estatisticas/estatisticas.service';
+import { ResponseService } from 'src/app/service/response/response.service';
 
 @Component({
   selector: 'app-estatisticas',
@@ -48,6 +52,11 @@ export class EstatisticasComponent implements OnInit {
     maintainAspectRatio: false,
     cutout: '62%',
     plugins: {
+      datalabels: {
+        color: '#fff',
+        font: { weight: 'bold', family: 'Poppins', size: 14 },
+        formatter: (value) => value > 0 ? value : ''
+      },
       legend: {
         position: 'bottom',
         labels: { font: { family: 'Poppins', size: 12 }, padding: 18 },
@@ -98,6 +107,11 @@ export class EstatisticasComponent implements OnInit {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
+      datalabels: {
+        color: '#fff',
+        font: { weight: 'bold', family: 'Poppins', size: 12 },
+        formatter: (value) => (value as number) > 0 ? (value as number).toFixed(1) + '%' : ''
+      },
       legend: {
         display: true,
         position: 'top',
@@ -135,7 +149,54 @@ export class EstatisticasComponent implements OnInit {
     },
   };
 
-  constructor(private estatisticasService: EstatisticasService) {}
+  // Gráfico 3: Fases mais realizadas por usuários únicos
+  fasesRealizadasData: ChartData<'bar'> = {
+    labels: [],
+    datasets: [{
+      label: 'Usuários Únicos',
+      data: [],
+      backgroundColor: 'rgba(54, 162, 235, 0.82)',
+      borderColor: '#36A2EB',
+      borderWidth: 1,
+      borderRadius: 4,
+    }],
+  };
+
+  fasesRealizadasOptions: ChartOptions<'bar'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      datalabels: {
+        color: '#1a2840',
+        anchor: 'end',
+        align: 'end',
+        font: { weight: 'bold', family: 'Poppins', size: 12 },
+        formatter: (value) => value > 0 ? value : ''
+      },
+      legend: { display: false },
+      title: {
+        display: true,
+        text: 'Fases Mais Realizadas (Por Usuários)',
+        font: { family: 'Poppins', size: 14, weight: 'bold' },
+        color: '#1a2840',
+        padding: { bottom: 12 },
+      },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}`,
+        },
+      },
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { family: 'Poppins', size: 11 } } },
+      y: { beginAtZero: true, ticks: { font: { family: 'Poppins', size: 11 }, stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.05)' } },
+    },
+  };
+
+  constructor(
+    private estatisticasService: EstatisticasService,
+    private responseService: ResponseService
+  ) {}
 
   ngOnInit(): void {
     this.carregarAplicacoes();
@@ -208,6 +269,7 @@ export class EstatisticasComponent implements OnInit {
         this.stats = data;
         this.atualizarDoughnut(data);
         this.carregarEstatisticasPorFase();
+        this.carregarFasesMaisRealizadas();
         this.isLoading = false;
       },
       error: err => {
@@ -257,6 +319,49 @@ export class EstatisticasComponent implements OnInit {
         };
       },
       error: () => {},
+    });
+  }
+
+  // Gráfico 3: Fases mais realizadas (usuários únicos)
+  carregarFasesMaisRealizadas(): void {
+    if (!this.filtros.idApp) return;
+
+    // Remove o filtro de fase para comparar todas as fases da aplicação
+    const filtrosSemFase = { ...this.filtros, phase: undefined, activity: undefined };
+    
+    // Busca um número grande de respostas para consolidar no frontend
+    this.responseService.getFilteredQuestions(
+      this.filtros.idApp,
+      filtrosSemFase,
+      0,
+      100000
+    ).subscribe({
+      next: page => {
+        const responses = page.content;
+        const usersPorFase: { [fase: string]: Set<string> } = {};
+
+        responses.forEach(res => {
+          if (!usersPorFase[res.phase]) {
+            usersPorFase[res.phase] = new Set<string>();
+          }
+          if (res.userID) {
+            usersPorFase[res.phase].add(res.userID);
+          }
+        });
+
+        const fasesCount = Object.keys(usersPorFase)
+          .map(fase => ({ fase, count: usersPorFase[fase].size }))
+          .sort((a, b) => b.count - a.count); // Ordenar decrescente
+
+        this.fasesRealizadasData = {
+          labels: fasesCount.map(f => f.fase),
+          datasets: [{
+            ...this.fasesRealizadasData.datasets[0],
+            data: fasesCount.map(f => f.count)
+          }]
+        };
+      },
+      error: err => console.error('Erro ao carregar fases mais realizadas', err)
     });
   }
 

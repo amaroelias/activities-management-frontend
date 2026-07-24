@@ -149,6 +149,23 @@
     </ng-template>
   </div>
 
+  <!-- Gráfico 3: Fases Mais Realizadas (por usuários) -->
+  <div class="chart-card full-width">
+    <div class="chart-wrapper" *ngIf="fasesRealizadasData.labels?.length; else semFasesRealizadas">
+      <canvas baseChart
+              [data]="fasesRealizadasData"
+              [options]="fasesRealizadasOptions"
+              [type]="'bar'">
+      </canvas>
+    </div>
+    <ng-template #semFasesRealizadas>
+      <div class="chart-empty">
+        <mat-icon>bar_chart</mat-icon>
+        <p>Nenhum dado de usuário encontrado para as fases.</p>
+      </div>
+    </ng-template>
+  </div>
+
 </div>
 
 <!-- Estado vazio -->
